@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Recommender</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+        font-family: 'Roboto', sans-serif;
+        background-color: #f9f9f9; /* Light background for contrast */
+        margin: 0;
+        padding: 50px;
+        }
+        .genre-icon {
+            cursor: pointer;
+            width: 120px; 
+            height: 120px; 
+            margin: 5px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            transition: background-color 0.3s; 
+        }
+        .genre-icon:hover {
+            background-color: #add8e6; 
+        }
+        .selected {
+            background-color: #ffcccb; 
+        }
+        .genre-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .centered-title {
+            text-align: center; 
+            margin: 0; 
+            padding: 20px; 
+        }
+        .list-group-item {
+            background-color: #ffffff; /* White background for list items */
+            border: 1px solid #ddd; /* Light border for list items */
+            margin-bottom: 10px; /* Space between list items */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <br><h1 class="centered-title">What Type Of Movie Do You Feel Like?</h1><br>
+
+        <!-- Genre Icons -->
+        <form method="POST" action="/recommend">
+            <div class="genre-container">
+                <div class="genre-icon" onclick="selectGenre('Action', event)">
+                    <i class="fas fa-fist-raised"></i><br>Action
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Adventure', event)">
+                    <i class="fas fa-compass"></i><br>Adventure
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Animation', event)">
+                    <i class="fas fa-paint-brush"></i><br>Animation
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Comedy', event)">
+                    <i class="fas fa-laugh"></i><br>Comedy
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Crime', event)">
+                    <i class="fas fa-gavel"></i><br>Crime
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Documentary', event)">
+                    <i class="fas fa-video"></i><br>Documentary
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Drama', event)">
+                    <i class="fas fa-theater-masks"></i><br>Drama
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Fantasy', event)">
+                    <i class="fas fa-magic"></i><br>Fantasy
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Horror', event)">
+                    <i class="fas fa-ghost"></i><br>Horror
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Music', event)">
+                    <i class="fas fa-music"></i><br>Music
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Mystery', event)">
+                    <i class="fas fa-question"></i><br>Mystery
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Romance', event)">
+                    <i class="fas fa-heart"></i><br>Romance
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Sci-Fi', event)">
+                    <i class="fas fa-rocket"></i><br>Sci-Fi
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Thriller', event)">
+                    <i class="fas fa-skull-crossbones"></i><br>Thriller
+                </div>
+                <div class="genre-icon" onclick="selectGenre('War', event)">
+                    <i class="fas fa-flag"></i><br>War
+                </div>
+                <div class="genre-icon" onclick="selectGenre('Western', event)">
+                    <i class="fas fa-hat-cowboy"></i><br>Western
+                </div>
+            </div>
+            <input type="hidden" id="genre" name="genre" value="">
+            <button type="submit" class="btn btn-primary mt-3" id="submit-button" style="display: none;">Get Recommendations</button>
+        </form>
+
+        <!-- Section to display movie recommendations -->
+        {% if recommendations %}
+            <br><br><h2 class="text-center">Try These Cool {{ genre }} Movies!</h2><br>
+            <div class="d-flex flex-column align-items-center"> <!-- Flex column for vertical stacking -->
+                {% for movie in recommendations %}
+                    <span class="badge badge-info mb-2" style="font-size: 1.2rem; padding: 20px 15px; border-radius: 10px;">{{ movie['title'] }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function selectGenre(genre, event) {
+            // Set the hidden input value
+            document.getElementById('genre').value = genre;
+
+            // Remove 'selected' class from all icons
+            const icons = document.querySelectorAll('.genre-icon');
+            icons.forEach(icon => {
+                icon.classList.remove('selected');
+            });
+
+            // Add 'selected' class to the clicked icon
+            const selectedIcon = event.currentTarget; // Get the clicked icon
+            selectedIcon.classList.add('selected');
+
+            // Store the selected genre in local storage
+            localStorage.setItem('selectedGenre', genre);
+
+            // Show and submit the button
+            document.getElementById('submit-button').click(); // Trigger the button click
+        }
+
+        // On page load, check if there is a selected genre in local storage
+        window.onload = function() {
+            const selectedGenre = localStorage.getItem('selectedGenre');
+            if (selectedGenre) {
+                const icons = document.querySelectorAll('.genre-icon');
+                icons.forEach(icon => {
+                    if (icon.textContent.includes(selectedGenre)) {
+                        icon.classList.add('selected'); // Add 'selected' class to the matched icon
+                    }
+                });
+                // Set the genre input value for displaying recommendations
+                document.getElementById('genre').value = selectedGenre;
+            }
+        };
+    </script>
+</body>
+</html>
