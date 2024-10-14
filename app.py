@@ -51,11 +51,11 @@ def get_popular_movies_by_genre(movies_df, ratings_df, selected_genre):
 
     return sampled_movies
 
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
 
-@app.route('/recommend', methods=['POST'])
+@app.route('/recommend', methods=['GET','POST'])
 def recommend():
     genre = request.form['genre']
     # Load datasets
