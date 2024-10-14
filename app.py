@@ -49,7 +49,7 @@ def get_popular_movies_by_genre(movies_df, ratings_df, selected_genre):
 
     return sampled_movies
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
