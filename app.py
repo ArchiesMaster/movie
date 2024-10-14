@@ -1,8 +1,10 @@
 import pandas as pd
 import random
 from flask import Flask, render_template, request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 def load_movies(file_path):
     """Load the MovieLens dataset."""
