@@ -55,23 +55,34 @@ def get_popular_movies_by_genre(movies_df, ratings_df, selected_genre):
 def index():
     return render_template('index.html')
 
-@app.route('/recommend', methods=['GET','POST'])
+@app.route('/recommend', methods=['GET', 'POST'])
 def recommend():
-    genre = request.form['genre']
-    # Load datasets
-    movies_df = load_movies('data/movies.csv')
-    ratings_df = load_ratings('data/ratings.csv')
+    if request.method == 'POST':
+        # Use .get() to safely access the form data
+        genre = request.form.get('genre')
+        
+        
+        # Load datasets
+        movies_df = load_movies('data/movies.csv')
+        ratings_df = load_ratings('data/ratings.csv')
 
-    # Get popular movies for the selected genre
-    movies = get_popular_movies_by_genre(movies_df, ratings_df, genre)
+        # Check if a genre was provided
+        if not genre:
+            recommendations = []  # Set an empty list or None
+        else:
+            # Get popular movies for the selected genre
+            movies = get_popular_movies_by_genre(movies_df, ratings_df, genre)
 
-    # Check if movies DataFrame is not empty
-    if movies.empty:
-        recommendations = None  # No recommendations if the DataFrame is empty
-    else:
-        recommendations = movies.to_dict(orient='records')  # Convert to dictionary for easier handling in the template
+        # Check if movies DataFrame is not empty
+        if movies.empty:
+            recommendations = None  # No recommendations if the DataFrame is empty
+        else:
+            recommendations = movies.to_dict(orient='records')  # Convert to dictionary for easier handling in the template
 
-    return render_template('index.html', recommendations=recommendations, genre=genre)
+        return render_template('index.html', recommendations=recommendations, genre=genre)
+    
+    return render_template('index.html')  # Handle GET request
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0')
