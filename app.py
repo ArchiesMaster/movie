@@ -9,24 +9,20 @@ CORS(app)
 def load_movies(file_path):
     """Load the MovieLens dataset."""
     df = pd.read_csv(file_path)
-    print(f"Movies DataFrame: {df.head()}")  # Debug statement
     return df
 
 def load_ratings(file_path):
     """Load the ratings dataset."""
     df = pd.read_csv(file_path)
-    print(f"Ratings DataFrame: {df.head()}")  # Debug statement
     return df
 
 def get_popular_movies_by_genre(movies_df, ratings_df, selected_genre):
     """Filter movies based on the selected genre and get 5 popular movies."""
     # Filter movies by genre
     filtered_movies = movies_df[movies_df['genres'].str.contains(selected_genre, case=False)]
-    print(f"Filtered Movies: {filtered_movies.head()}")  # Debug statement
 
     # Merge with ratings to calculate popularity
     merged_df = filtered_movies.merge(ratings_df, on='movieId')
-    print(f"Merged DataFrame: {merged_df.head()}")  # Debug statement
 
     # Calculate average rating and count of ratings
     popular_movies = (merged_df.groupby('movieId')
